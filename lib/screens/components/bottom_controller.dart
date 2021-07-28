@@ -14,31 +14,46 @@ class BottomControllerState extends State<BottomController> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // color: Colors.black,
       decoration: BoxDecoration(
         color: Color(accentColor),
-        shape: BoxShape.circle,
-        // borderRadius: BorderRadius.only(
-        //   topLeft: Radius.circular(50),
-        //   topRight: Radius.circular(50),
-        // ),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(50),
+          topRight: Radius.circular(50),
+        ),
       ),
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.only(top: 20, left: 30, right: 30),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // header
-          Text(
-            "Today",
-            style: lightText(22),
+          Container(
+            padding: EdgeInsets.only(top: 10, bottom: 20),
+            child: Text(
+              "Today",
+              style: lightText(22),
+            ),
           ),
           // week wheel
           buildDateWidget(),
           Divider(),
           // add habit button
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.add),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),
+                  primary: Color(secondaryColor),
+                  padding: EdgeInsets.all(6)),
+              onPressed: () {},
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.add),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15,
           )
         ],
       ),
@@ -62,13 +77,27 @@ class BottomControllerState extends State<BottomController> {
     Week currentWeek = Week.current(); // current week
     return Container(
       decoration: new BoxDecoration(
-          color: currentWeek.day(day).day == DateTime.now().day
-              ? Colors.black
-              : Colors.white),
+        color: currentWeek.day(day).day == DateTime.now().day
+            ? Color(secondaryColor)
+            : Colors.transparent,
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      ),
+      padding: EdgeInsets.only(top: 7, bottom: 7, right: 13, left: 13),
       child: Column(
         children: [
-          Text(getDayName(day)),
-          Text(currentWeek.day(day).day.toString())
+          Text(
+            getDayName(day),
+            style: hintText(16),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(
+            currentWeek.day(day).day.toString(),
+            style: lightText(16),
+          )
         ],
       ),
     );
@@ -78,6 +107,7 @@ class BottomControllerState extends State<BottomController> {
     // display all days
     // highlight day of week
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         for (var i = 0; i < 7; i++) buildWeekDayWidget(i),
       ],

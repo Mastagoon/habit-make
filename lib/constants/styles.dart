@@ -11,15 +11,16 @@ TextStyle hintText(double size) {
 
 ButtonStyle cardButton(bool finished) {
   return ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(
-        Color(finished ? primaryColor : secondaryColor),
+    backgroundColor: MaterialStateProperty.all(
+      Color(finished ? primaryColor : secondaryColor),
+    ),
+    padding: MaterialStateProperty.all(
+      EdgeInsets.zero,
+    ),
+    shape: MaterialStateProperty.all(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
-      padding: MaterialStateProperty.all(
-        EdgeInsets.zero,
-      ),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-      ));
+    ),
+  );
 }
