@@ -6,7 +6,7 @@ import 'screens/home.dart';
 void main() => runApp(
       MaterialApp(
         title: "Habit Maker",
-        theme: ThemeData(primaryColor: Color(primaryColor)),
+        theme: ThemeData(primaryColor: Color(primaryColor), fontFamily: "Lato"),
         home: Home(),
       ),
     );
