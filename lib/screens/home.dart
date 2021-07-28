@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
             children: [
               // title
               Container(
-                padding: EdgeInsets.only(top: 15, bottom: 15),
+                padding: EdgeInsets.only(top: 15, bottom: 15, left: 5),
                 child: Text(
                   "Overview",
                   style: lightText(22),
@@ -44,8 +44,16 @@ class _HomeState extends State<Home> {
                   goal: "1:00:00 Daily",
                   lorem: "lorem epsum dolor"),
               // seperator
-              Text("Completed Today"),
-              Divider(),
+              Container(
+                padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
+                child: Text(
+                  "Practiced Today",
+                  style: hintText(16),
+                ),
+              ),
+              // Divider(
+              //   color: Colors.white,
+              // ),
               // finished habits for the day
               HabitCard(
                   completed: true,
@@ -65,10 +73,6 @@ class _HomeState extends State<Home> {
                   practicedTime: "Practiced for 4:15:11 today",
                   goal: "3:00:00 Daily",
                   lorem: "lorem epsum dolor"),
-
-              // Card(
-              //   child: ,
-              // )
             ],
           ),
         ),
