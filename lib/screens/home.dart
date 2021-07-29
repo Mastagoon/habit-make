@@ -17,6 +17,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Habit Builder"),
         leading: Icon(
@@ -44,7 +45,6 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(color: Color(mainBackgroundColor)),
         // margin: MediaQuery.of(context).padding,
