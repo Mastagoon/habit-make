@@ -29,7 +29,11 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
   void setNewHabit() {
     // check if name is set
     if (habitName.length < 1) {
-      Fluttertoast.showToast(msg: "Yo you have a problem.");
+      Fluttertoast.showToast(
+        msg: "The habit name field is required.",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     }
   }
 
