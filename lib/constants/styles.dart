@@ -24,3 +24,17 @@ ButtonStyle cardButton(bool finished) {
     ),
   );
 }
+
+ButtonStyle RoundedButton(int backgroundColor, double size) {
+  return ButtonStyle(
+    shape: MaterialStateProperty.all(
+      CircleBorder(),
+    ),
+    padding: MaterialStateProperty.all(
+      EdgeInsets.all(size),
+    ),
+    backgroundColor: MaterialStateProperty.all(
+      Color(backgroundColor),
+    ),
+  );
+}

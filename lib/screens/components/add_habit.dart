@@ -134,18 +134,42 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                 ),
                 // choose time
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Column(
                       children: [
                         ElevatedButton(
+                          style: RoundedButton(primaryColor, 20),
                           onPressed: () {},
                           child: Text(
                             "00",
-                            style: lightText(16),
+                            style: lightText(18),
                           ),
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         Text(
                           "HOURS",
+                          style: lightText(16),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          style: RoundedButton(primaryColor, 20),
+                          onPressed: () {},
+                          child: Text(
+                            "00",
+                            style: lightText(18),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "MINUTES",
                           style: lightText(16),
                         ),
                       ],
