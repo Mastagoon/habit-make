@@ -38,3 +38,15 @@ ButtonStyle RoundedButton(int backgroundColor, double size) {
     ),
   );
 }
+
+ButtonStyle generalButtonStyle(
+    int backgroundColor, double sizeX, double sizeY) {
+  return ButtonStyle(
+    padding: MaterialStateProperty.all(
+      EdgeInsets.symmetric(horizontal: sizeX, vertical: sizeY),
+    ),
+    backgroundColor: MaterialStateProperty.all(
+      Color(backgroundColor),
+    ),
+  );
+}
