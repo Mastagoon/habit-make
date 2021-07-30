@@ -33,6 +33,7 @@ dependencies:
   percent_indicator: ^3.0.1
   numberpicker: ^2.1.1
   fluttertoast: ^8.0.7
+  shared_preferences: ^2.0.6
 
 dev_dependencies:
   flutter_test:

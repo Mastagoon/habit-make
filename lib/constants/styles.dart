@@ -25,7 +25,7 @@ ButtonStyle cardButton(bool finished) {
   );
 }
 
-ButtonStyle RoundedButton(int backgroundColor, double size) {
+ButtonStyle roundedButton(int backgroundColor, double size) {
   return ButtonStyle(
     shape: MaterialStateProperty.all(
       CircleBorder(),
