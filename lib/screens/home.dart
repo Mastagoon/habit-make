@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
+import 'package:habit_maker/data/habits.dart';
 // components
 import 'components/add_habit.dart';
 import 'components/habit_card.dart';
@@ -46,13 +47,17 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(color: Color(mainBackgroundColor)),
         // margin: MediaQuery.of(context).padding,
         padding: EdgeInsets.only(left: 15, right: 15),
         // #TODO reduce col's width (too wide)
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.only(bottom: 10),
+          child: Wrap(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            runSpacing: 10,
             children: [
               // title
               Container(
@@ -65,12 +70,7 @@ class _HomeState extends State<Home> {
                 // #TODO seperator or smth
               ),
               // unfinished habits for the day
-              HabitCard(
-                  completed: false,
-                  name: "Dance tango",
-                  practicedTime: "Practiced for 00:34:12 today",
-                  goal: "1:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
+              ...unfinishedCards,
               // seperator
               Container(
                 padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
@@ -83,37 +83,19 @@ class _HomeState extends State<Home> {
               //   color: Colors.white,
               // ),
               // finished habits for the day
-              HabitCard(
-                  completed: true,
-                  name: "Meditation",
-                  practicedTime: "Practiced for 1:24:12 today",
-                  goal: "1:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
-              HabitCard(
-                  completed: true,
-                  name: "Run 21 miles",
-                  practicedTime: "Practiced for 3:14:12 today",
-                  goal: "2:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
-              HabitCard(
-                  completed: true,
-                  name: "Naked Twister",
-                  practicedTime: "Practiced for 4:15:11 today",
-                  goal: "3:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
-              HabitCard(
-                  completed: true,
-                  name: "Naked Twister",
-                  practicedTime: "Practiced for 4:15:11 today",
-                  goal: "3:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
-              HabitCard(
-                  completed: true,
-                  name: "Naked Twister",
-                  practicedTime: "Practiced for 4:15:11 today",
-                  goal: "3:00:00 Daily",
-                  lorem: "lorem epsum dolor"),
+              ...finishedCards,
+
+              // add a new habit card
+              HabitCard.addHabit(),
+
+              // HabitCard(
+              //     completed: completed,
+              //     name: name,
+              //     practicedTime: practicedTime,
+              //     goal: goal,
+              //     lorem: lorem)
             ],
+            
           ),
         ),
       ),

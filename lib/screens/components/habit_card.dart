@@ -4,10 +4,11 @@ import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 
 class HabitCard extends StatefulWidget {
-  final String name, practicedTime, goal, lorem;
-  final bool completed;
+  String? name, practicedTime, goal, lorem;
+  bool? completed;
+  bool newHabit = false;
 
-  const HabitCard({
+  HabitCard({
     required this.completed,
     required this.name,
     required this.practicedTime,
@@ -16,22 +17,24 @@ class HabitCard extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  // HabitCard(bool completed, String name, String practicedTime, String goal,
-  //     String lorem) {
-  //   this.name = name;
-  //   this.practicedTime = practicedTime;
-  //   this.goal = goal;
-  //   this.lorem = lorem;
-  //   this.completed = completed;
-  // }
+  HabitCard.addHabit({
+    this.completed,
+    this.name,
+    this.practicedTime,
+    this.goal,
+    this.lorem,
+    this.newHabit = true,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _HabitCardState createState() => _HabitCardState();
 }
 
 class _HabitCardState extends State<HabitCard> {
-  late String _name, _practicedTime, _goal, _lorem;
-  late bool _completed;
+  String? _name, _practicedTime, _goal, _lorem;
+  bool? _completed;
+  bool _newHabit = true;
 
   @override
   void initState() {
@@ -39,21 +42,97 @@ class _HabitCardState extends State<HabitCard> {
 
     if (this.mounted)
       setState(() {
-        _name = widget.name;
-        _practicedTime = widget.practicedTime;
-        _goal = widget.goal;
-        _lorem = widget.lorem;
-        _completed = widget.completed;
+        _name = widget.name ?? null;
+        _practicedTime = widget.practicedTime ?? null;
+        _goal = widget.goal ?? null;
+        _lorem = widget.lorem ?? null;
+        _completed = widget.completed ?? null;
+        _newHabit = widget.newHabit;
       });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_newHabit == true) {
+      print("yes");
+      return Center(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          decoration: BoxDecoration(
+              color: Color(secondaryColorDark).withOpacity(0.7),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(secondaryColor).withOpacity(0.4),
+                  blurRadius: 8,
+                  spreadRadius: 4,
+                  offset: Offset(4, 4),
+                )
+              ]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Icon(
+                    Icons.add_circle_outline,
+                    color: Color(primaryColor).withOpacity(0.5),
+                    size: 50,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Add New",
+                    style: lightText(20, true),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // IntrinsicHeight(
+          //   child: Center(
+          //     child: Column(
+          //       children: [
+          //         Center(
+          //           child: IconButton(
+          //             color: Colors.white,
+          //             padding: EdgeInsets.all(15),
+          //             onPressed: () {},
+          //             icon: Icon(
+          //               Icons.add_circle_outline_outlined,
+          //               size: 50,
+          //             ),
+          //           ),
+          //         ),
+          //         SizedBox(
+          //           height: 20,
+          //         ),
+          //         Text(
+          //           "Center Text",
+          //           style: lightText(22),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+        ),
+      );
+    }
     return Center(
       // card
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: Color(_completed ? secondaryColor : primaryColor),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Color(_completed == true ? secondaryColor : primaryColor),
+            boxShadow: [
+              BoxShadow(
+                color: Color(secondaryColor).withOpacity(0.4),
+                blurRadius: 8,
+                spreadRadius: 4,
+                offset: Offset(4, 4),
+              )
+            ]),
         child: IntrinsicHeight(
           child: Row(
             children: [
@@ -66,14 +145,14 @@ class _HabitCardState extends State<HabitCard> {
                     children: [
                       Container(
                         child: Text(
-                          _name,
+                          _name ?? "Null",
                           style: lightText(22),
                         ),
                       ),
                       const SizedBox(height: 5),
                       Container(
                         child: Text(
-                          _practicedTime,
+                          _practicedTime ?? "00:00:00",
                           style: lightText(12),
                         ),
                       ),
@@ -87,7 +166,7 @@ class _HabitCardState extends State<HabitCard> {
                       const SizedBox(height: 3),
                       Container(
                         child: Text(
-                          _lorem,
+                          _lorem ?? "lorem",
                           style: lightText(12),
                         ),
                       ),
@@ -120,7 +199,7 @@ class _HabitCardState extends State<HabitCard> {
                 backgroundColor: Color(progressBarBg),
               ),
               const SizedBox(
-                width: 10,
+                width: 20,
               ),
               // buttons
               Column(
@@ -132,12 +211,13 @@ class _HabitCardState extends State<HabitCard> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {},
-                      style: cardButton(true),
+                      style: cardButton(_completed ?? true),
                       child: IconButton(
                         onPressed: () {},
                         icon: Icon(
                           Icons.timer,
                           color: Colors.white,
+                          size: 20,
                         ),
                       ),
                     ),
@@ -148,13 +228,14 @@ class _HabitCardState extends State<HabitCard> {
                     width: 40,
                     height: 40,
                     child: ElevatedButton(
-                      style: cardButton(true),
+                      style: cardButton(_completed ?? true),
                       onPressed: () {},
                       child: IconButton(
                         onPressed: () {},
                         icon: Icon(
                           Icons.settings,
                           color: Colors.white,
+                          size: 20,
                         ),
                       ),
                     ), // #TOOD check if icons good

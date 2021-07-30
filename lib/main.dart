@@ -7,6 +7,7 @@ void main() => runApp(
       MaterialApp(
         title: "Habit Maker",
         theme: ThemeData(
+          backgroundColor: Colors.black,
           canvasColor: Color(secondaryColorDark),
           primaryColor: Color(secondaryColor),
           fontFamily: "Lato",

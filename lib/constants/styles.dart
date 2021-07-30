@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 
-TextStyle lightText(double size) {
-  return TextStyle(color: Colors.white, fontSize: size);
+TextStyle lightText(double size, [bool bold = false]) {
+  return TextStyle(
+      color: Colors.white,
+      fontSize: size,
+      fontWeight: bold ? FontWeight.bold : FontWeight.normal);
 }
 
 TextStyle hintText(double size) {

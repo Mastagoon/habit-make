@@ -7,4 +7,5 @@ final darkSeperator = 0xff707070;
 final progressBarLight = 0xff6FF1BC;
 final progressBarBg = 0xffA986E2;
 final dangerColor = 0xffff0000;
-final successColor = 0xff00ff00;
+final successColor = 0xffC8E6C9;
+final newCardBackground = 0xff3C3E5F;
