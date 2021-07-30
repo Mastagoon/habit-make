@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -35,9 +37,67 @@ class HabitCard extends StatefulWidget {
 }
 
 class _HabitCardState extends State<HabitCard> {
-  String? _name, _practicedTime, _goal, _lorem;
+  String? _name, _practicedTimeString, _goal, _lorem;
+  String _percentageString = "0%",
+      _practiceString = "00:00:00",
+      _centerString = "0%";
+  Duration _practiceDuration = Duration(seconds: 0);
   bool? _completed;
   bool _newHabit = true;
+  TextStyle? _animationStyle;
+  Timer? _animationTimer, _clockTimer;
+  bool large = false;
+  bool _timerState = false;
+
+  // TODO end me
+  void animateText() {
+    if (large) {
+      print("Enlarging text...");
+      setState(() {
+        _animationStyle = percentageCenterStartStyle(16);
+        _centerString = _practiceString;
+      });
+    } else {
+      print("Enlargingn't text...");
+      setState(() {
+        _animationStyle = percentageCenterStartStyle(16);
+        _centerString = _percentageString;
+      });
+    }
+    large = !large;
+  }
+
+  void toggleTimer() {
+    if (!_timerState) {
+      // start timer
+      _timerState = true; // prevent spam
+      _animationTimer?.cancel();
+      _clockTimer = Timer.periodic(Duration(seconds: 1), (_) => updateTimer());
+      _centerString = _practiceString;
+    } else {
+      _timerState = false;
+      _clockTimer?.cancel();
+      _animationTimer =
+          Timer.periodic(Duration(seconds: 5), (_) => animateText());
+    }
+  }
+
+  void updateTimer() {
+    setState(() {
+      final secs = _practiceDuration.inSeconds + 1;
+      _practiceDuration = Duration(seconds: secs);
+      _practicedTimeString = formatTime();
+      _centerString = _practicedTimeString ?? "00:00:00";
+    });
+  }
+
+  String formatTime() {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(_practiceDuration.inMinutes.remainder(60));
+    final seconds = twoDigits(_practiceDuration.inSeconds.remainder(60));
+    final hours = twoDigits(_practiceDuration.inHours);
+    return "$hours:$minutes:$seconds";
+  }
 
   @override
   void initState() {
@@ -46,11 +106,14 @@ class _HabitCardState extends State<HabitCard> {
     if (this.mounted)
       setState(() {
         _name = widget.name ?? null;
-        _practicedTime = widget.practicedTime ?? null;
+        _practicedTimeString = widget.practicedTime ?? null;
         _goal = widget.goal ?? null;
         _lorem = widget.lorem ?? null;
         _completed = widget.completed ?? null;
         _newHabit = widget.newHabit;
+        _animationStyle = lightText(16);
+        _animationTimer =
+            Timer.periodic(Duration(seconds: 5), (_) => animateText());
       });
   }
 
@@ -148,7 +211,7 @@ class _HabitCardState extends State<HabitCard> {
                       const SizedBox(height: 5),
                       Container(
                         child: Text(
-                          _practicedTime ?? "00:00:00",
+                          " $_practicedTimeString",
                           style: lightText(12),
                         ),
                       ),
@@ -182,17 +245,30 @@ class _HabitCardState extends State<HabitCard> {
               // right side
               // progress bar
               // #TODO logic to change its appearnce when active
-              // #TODO add text inside
-              CircularPercentIndicator(
-                radius: 75,
-                lineWidth: 5,
-                percent: 0.53,
-                center: Text(
-                  "53%",
-                  style: lightText(16),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.zero,
                 ),
-                progressColor: Color(progressBarLight),
-                backgroundColor: Color(progressBarBg),
+                onPressed: toggleTimer,
+                child: CircularPercentIndicator(
+                  animation: true,
+                  animationDuration: 1000,
+                  radius: 90,
+                  lineWidth: 5,
+                  percent: 0.53,
+                  center: Container(
+                    child: AnimatedDefaultTextStyle(
+                      duration: Duration(seconds: 1),
+                      style: _animationStyle ?? lightText(16),
+                      child: Text(
+                        _centerString,
+                      ),
+                    ),
+                  ),
+                  progressColor: Color(progressBarLight),
+                  backgroundColor: Color(progressBarBg),
+                ),
               ),
               const SizedBox(
                 width: 20,

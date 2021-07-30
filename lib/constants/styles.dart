@@ -53,3 +53,23 @@ ButtonStyle generalButtonStyle(
     ),
   );
 }
+
+ButtonStyle timerPercentageButtonStyle() {
+  return ButtonStyle(
+      // shape: MaterialStateProperty.all(Shape.)
+      );
+}
+
+TextStyle percentageCenterStartStyle(double size) {
+  return TextStyle(
+    color: Colors.white.withOpacity(1),
+    fontSize: size,
+  );
+}
+
+TextStyle percentageCenterEndStyle(double size) {
+  return TextStyle(
+    color: Colors.white.withOpacity(0),
+    fontSize: size,
+  );
+}
