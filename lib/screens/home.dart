@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/data/habits.dart';
+import 'package:habit_maker/screens/components/add_habit_card.dart';
 // components
 import 'components/add_habit.dart';
 import 'components/habit_card.dart';
@@ -70,7 +71,7 @@ class _HomeState extends State<Home> {
                 // #TODO seperator or smth
               ),
               // unfinished habits for the day
-              ...unfinishedCards,
+              HabitCard(unfinishedHabits[0]),
               // seperator
               Container(
                 padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
@@ -83,10 +84,10 @@ class _HomeState extends State<Home> {
               //   color: Colors.white,
               // ),
               // finished habits for the day
-              ...finishedCards,
+              // ...finishedCards,
 
               // add a new habit card
-              HabitCard.addHabit(),
+              NewHabit(),
 
               // HabitCard(
               //     completed: completed,

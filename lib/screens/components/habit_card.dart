@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:habit_maker/classes/Habit.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
@@ -9,45 +10,24 @@ import 'package:habit_maker/constants/styles.dart';
 import 'add_habit.dart';
 
 class HabitCard extends StatefulWidget {
-  String? name, practicedTime, goal, lorem;
-  bool? completed;
-  bool newHabit = false;
-
-  HabitCard({
-    required this.completed,
-    required this.name,
-    required this.practicedTime,
-    required this.goal,
-    required this.lorem,
-    Key? key,
-  }) : super(key: key);
-
-  HabitCard.addHabit({
-    this.completed,
-    this.name,
-    this.practicedTime,
-    this.goal,
-    this.lorem,
-    this.newHabit = true,
-    Key? key,
-  }) : super(key: key);
+  Habit habit;
+  HabitCard(this.habit);
 
   @override
   _HabitCardState createState() => _HabitCardState();
 }
 
 class _HabitCardState extends State<HabitCard> {
-  String? _name, _practicedTimeString, _goal, _lorem;
-  String _percentageString = "0%",
-      _practiceString = "00:00:00",
-      _centerString = "0%";
-  Duration _practiceDuration = Duration(seconds: 0);
+  String? _name, _frequency, _percentageString;
+  String _practiceString = "00:00:00", _centerString = "0%";
+  Duration _practiceDuration = Duration(seconds: 0),
+      _targetDuration = Duration(seconds: 0);
   bool? _completed;
-  bool _newHabit = true;
   TextStyle? _animationStyle;
   Timer? _animationTimer, _clockTimer;
   bool large = false;
   bool _timerState = false;
+  double _progressPercentage = 0;
 
   // TODO end me
   void animateText() {
@@ -61,7 +41,7 @@ class _HabitCardState extends State<HabitCard> {
       print("Enlargingn't text...");
       setState(() {
         _animationStyle = percentageCenterStartStyle(16);
-        _centerString = _percentageString;
+        _centerString = _percentageString ?? "0%";
       });
     }
     large = !large;
@@ -86,16 +66,16 @@ class _HabitCardState extends State<HabitCard> {
     setState(() {
       final secs = _practiceDuration.inSeconds + 1;
       _practiceDuration = Duration(seconds: secs);
-      _practicedTimeString = formatTime();
-      _centerString = _practicedTimeString ?? "00:00:00";
+      _practiceString = formatDuration(_practiceDuration);
+      _centerString = _practiceString;
     });
   }
 
-  String formatTime() {
+  String formatDuration(Duration d) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(_practiceDuration.inMinutes.remainder(60));
-    final seconds = twoDigits(_practiceDuration.inSeconds.remainder(60));
-    final hours = twoDigits(_practiceDuration.inHours);
+    final minutes = twoDigits(d.inMinutes.remainder(60));
+    final seconds = twoDigits(d.inSeconds.remainder(60));
+    final hours = twoDigits(d.inHours);
     return "$hours:$minutes:$seconds";
   }
 
@@ -105,13 +85,17 @@ class _HabitCardState extends State<HabitCard> {
 
     if (this.mounted)
       setState(() {
-        _name = widget.name ?? null;
-        _practicedTimeString = widget.practicedTime ?? null;
-        _goal = widget.goal ?? null;
-        _lorem = widget.lorem ?? null;
-        _completed = widget.completed ?? null;
-        _newHabit = widget.newHabit;
+        _name = widget.habit.name;
+        _frequency = widget.habit.frequency;
+        _practiceDuration = widget.habit.practiceDuration;
+        _targetDuration = widget.habit.targetDuration;
+        _practiceString = formatDuration(_practiceDuration);
         _animationStyle = lightText(16);
+        _completed = _practiceDuration >= _targetDuration;
+        _progressPercentage =
+            (_practiceDuration.inSeconds / _targetDuration.inSeconds);
+        _percentageString = "${(_progressPercentage * 100).round()}%";
+        _centerString = _percentageString ?? "0%";
         _animationTimer =
             Timer.periodic(Duration(seconds: 5), (_) => animateText());
       });
@@ -119,9 +103,6 @@ class _HabitCardState extends State<HabitCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (_newHabit == true) {
-      return newHabit();
-    }
     return Center(
       // card
       child: Container(
@@ -158,7 +139,7 @@ class _HabitCardState extends State<HabitCard> {
                       const SizedBox(height: 5),
                       Container(
                         child: Text(
-                          "$_practicedTimeString",
+                          "$_practiceString",
                           overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
@@ -166,7 +147,7 @@ class _HabitCardState extends State<HabitCard> {
                       const SizedBox(height: 3),
                       Container(
                         child: Text(
-                          "Goal: $_goal",
+                          "Goal: ${formatDuration(_targetDuration)} $_frequency",
                           overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
@@ -174,7 +155,7 @@ class _HabitCardState extends State<HabitCard> {
                       const SizedBox(height: 3),
                       Container(
                         child: Text(
-                          _lorem ?? "lorem",
+                          "lorem epsum dolor",
                           overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
@@ -207,8 +188,8 @@ class _HabitCardState extends State<HabitCard> {
                     animation: true,
                     animationDuration: 1000,
                     radius: 90,
-                    lineWidth: 5,
-                    percent: 0.53,
+                    lineWidth: 8,
+                    percent: _progressPercentage,
                     center: Container(
                       child: AnimatedDefaultTextStyle(
                         duration: Duration(seconds: 1),
@@ -272,73 +253,6 @@ class _HabitCardState extends State<HabitCard> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class newHabit extends StatelessWidget {
-  const newHabit({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: DottedBorder(
-        dashPattern: [8, 8],
-        strokeWidth: 3,
-        color: Colors.white.withOpacity(0.3),
-        borderType: BorderType.RRect,
-        radius: Radius.circular(15),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Color(secondaryColorDark).withOpacity(0.7),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(secondaryColor).withOpacity(0.4),
-                  blurRadius: 8,
-                  spreadRadius: 4,
-                  offset: Offset(4, 4),
-                )
-              ]),
-          child: OutlinedButton(
-            onPressed: () => showDialog(
-              context: context,
-              builder: (context) => AddHabitDialog(),
-            ),
-            style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                    EdgeInsets.symmetric(horizontal: 32, vertical: 16))),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      padding: EdgeInsets.all(0),
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.add_circle_outline,
-                        color: Color(primaryColor).withOpacity(0.5),
-                        size: 50,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "Add New",
-                      overflow: TextOverflow.ellipsis,
-                      style: lightText(20, true),
-                    ),
-                  ],
-                ),
-              ],
-            ),
           ),
         ),
       ),

@@ -56,8 +56,8 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       name: habitName,
       description: habitDescription,
       frequency: habitFrequency,
-      hours: habitHours,
-      minutes: habitMinutes,
+      targetDuration: Duration(hours: habitHours, minutes: habitMinutes),
+      practiceDuration: Duration(seconds: 0), // #TODO this shouldn't be needed
     );
     // save to shared prefs
     await SharedPrefs.set("habit1", habit.toJson());
