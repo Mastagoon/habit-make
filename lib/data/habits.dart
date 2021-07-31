@@ -3,7 +3,7 @@ import 'package:habit_maker/screens/components/habit_card.dart';
 List<HabitCard> unfinishedCards = [
   HabitCard(
     completed: false,
-    name: "Dance tango",
+    name: "Dance  tango tanogrn qgoreng",
     practicedTime: "00:34:12",
     goal: "1:00:00 Daily",
     lorem: "lorem epsum dolor",

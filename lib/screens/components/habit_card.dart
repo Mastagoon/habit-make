@@ -120,63 +120,7 @@ class _HabitCardState extends State<HabitCard> {
   @override
   Widget build(BuildContext context) {
     if (_newHabit == true) {
-      print("yes");
-      return Center(
-        child: DottedBorder(
-          dashPattern: [8, 8],
-          strokeWidth: 3,
-          color: Colors.white.withOpacity(0.3),
-          borderType: BorderType.RRect,
-          radius: Radius.circular(15),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Color(secondaryColorDark).withOpacity(0.7),
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(secondaryColor).withOpacity(0.4),
-                    blurRadius: 8,
-                    spreadRadius: 4,
-                    offset: Offset(4, 4),
-                  )
-                ]),
-            child: OutlinedButton(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) => AddHabitDialog(),
-              ),
-              style: ButtonStyle(
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.symmetric(horizontal: 32, vertical: 16))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.all(0),
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.add_circle_outline,
-                          color: Color(primaryColor).withOpacity(0.5),
-                          size: 50,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        "Add New",
-                        style: lightText(20, true),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+      return newHabit();
     }
     return Center(
       // card
@@ -194,9 +138,11 @@ class _HabitCardState extends State<HabitCard> {
             ]),
         child: IntrinsicHeight(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // left side
-              Flexible(
+              Expanded(
+                flex: 6,
                 child: Container(
                   padding: EdgeInsets.all(20),
                   child: Column(
@@ -205,13 +151,15 @@ class _HabitCardState extends State<HabitCard> {
                       Container(
                         child: Text(
                           _name ?? "Null",
+                          overflow: TextOverflow.ellipsis,
                           style: lightText(22),
                         ),
                       ),
                       const SizedBox(height: 5),
                       Container(
                         child: Text(
-                          " $_practicedTimeString",
+                          "$_practicedTimeString",
+                          overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
                       ),
@@ -219,6 +167,7 @@ class _HabitCardState extends State<HabitCard> {
                       Container(
                         child: Text(
                           "Goal: $_goal",
+                          overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
                       ),
@@ -226,6 +175,7 @@ class _HabitCardState extends State<HabitCard> {
                       Container(
                         child: Text(
                           _lorem ?? "lorem",
+                          overflow: TextOverflow.ellipsis,
                           style: lightText(12),
                         ),
                       ),
@@ -240,81 +190,155 @@ class _HabitCardState extends State<HabitCard> {
                 thickness: 1,
                 indent: 14,
                 endIndent: 14,
-                width: 40,
+                width: 20,
               ),
               // right side
               // progress bar
               // #TODO logic to change its appearnce when active
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: CircleBorder(),
-                  padding: EdgeInsets.zero,
-                ),
-                onPressed: toggleTimer,
-                child: CircularPercentIndicator(
-                  animation: true,
-                  animationDuration: 1000,
-                  radius: 90,
-                  lineWidth: 5,
-                  percent: 0.53,
-                  center: Container(
-                    child: AnimatedDefaultTextStyle(
-                      duration: Duration(seconds: 1),
-                      style: _animationStyle ?? lightText(16),
-                      child: Text(
-                        _centerString,
+              Expanded(
+                flex: 3,
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.zero,
+                  ),
+                  onPressed: toggleTimer,
+                  child: CircularPercentIndicator(
+                    animation: true,
+                    animationDuration: 1000,
+                    radius: 90,
+                    lineWidth: 5,
+                    percent: 0.53,
+                    center: Container(
+                      child: AnimatedDefaultTextStyle(
+                        duration: Duration(seconds: 1),
+                        style: _animationStyle ?? lightText(16),
+                        child: Text(
+                          _centerString,
+                        ),
                       ),
                     ),
+                    progressColor: Color(progressBarLight),
+                    backgroundColor: Color(progressBarBg),
                   ),
-                  progressColor: Color(progressBarLight),
-                  backgroundColor: Color(progressBarBg),
                 ),
               ),
-              const SizedBox(
-                width: 20,
-              ),
+              // const SizedBox(
+              //   width: 25,
+              // ),
               // buttons
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // clock btn
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: cardButton(_completed ?? true),
-                      child: IconButton(
+              Expanded(
+                flex: 2,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // clock btn
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ElevatedButton(
                         onPressed: () {},
-                        icon: Icon(
-                          Icons.timer,
-                          color: Colors.white,
-                          size: 20,
+                        style: cardButton(_completed ?? true),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.timer,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  // settings button
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: ElevatedButton(
-                      style: cardButton(_completed ?? true),
-                      onPressed: () {},
-                      child: IconButton(
+                    const SizedBox(height: 10),
+                    // settings button
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: ElevatedButton(
+                        style: cardButton(_completed ?? true),
                         onPressed: () {},
-                        icon: Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: 20,
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
-                      ),
-                    ), // #TOOD check if icons good
-                  ),
-                ],
-              )
+                      ), // #TOOD check if icons good
+                    ),
+                  ],
+                ),
+              ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class newHabit extends StatelessWidget {
+  const newHabit({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: DottedBorder(
+        dashPattern: [8, 8],
+        strokeWidth: 3,
+        color: Colors.white.withOpacity(0.3),
+        borderType: BorderType.RRect,
+        radius: Radius.circular(15),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Color(secondaryColorDark).withOpacity(0.7),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(secondaryColor).withOpacity(0.4),
+                  blurRadius: 8,
+                  spreadRadius: 4,
+                  offset: Offset(4, 4),
+                )
+              ]),
+          child: OutlinedButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AddHabitDialog(),
+            ),
+            style: ButtonStyle(
+                padding: MaterialStateProperty.all(
+                    EdgeInsets.symmetric(horizontal: 32, vertical: 16))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  children: [
+                    IconButton(
+                      padding: EdgeInsets.all(0),
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.add_circle_outline,
+                        color: Color(primaryColor).withOpacity(0.5),
+                        size: 50,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      "Add New",
+                      overflow: TextOverflow.ellipsis,
+                      style: lightText(20, true),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
