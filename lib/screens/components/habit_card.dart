@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:habit_maker/classes/Habit.dart';
+import 'package:habit_maker/providers/timer_provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
+import 'package:provider/provider.dart';
 
 import 'add_habit.dart';
 
@@ -28,6 +30,7 @@ class _HabitCardState extends State<HabitCard> {
   bool large = false;
   bool _timerState = false;
   double _progressPercentage = 0;
+  // var timerProvider;
 
   // TODO end me
   void animateText() {
@@ -52,7 +55,10 @@ class _HabitCardState extends State<HabitCard> {
       // start timer
       _timerState = true; // prevent spam
       _animationTimer?.cancel();
-      _clockTimer = Timer.periodic(Duration(seconds: 1), (_) => updateTimer());
+      _clockTimer = Timer.periodic(Duration(seconds: 1), (_) {
+        // timerProvider.activeHabit = this.widget.habit;
+        // timerProvider.updateHabitPracticeTime();
+      });
       _centerString = _practiceString;
     } else {
       _timerState = false;
@@ -82,6 +88,7 @@ class _HabitCardState extends State<HabitCard> {
   @override
   void initState() {
     super.initState();
+    var timerProvider = Provider.of<TimerProvider>(context);
 
     if (this.mounted)
       setState(() {
@@ -191,13 +198,19 @@ class _HabitCardState extends State<HabitCard> {
                     lineWidth: 8,
                     percent: _progressPercentage,
                     center: Container(
-                      child: AnimatedDefaultTextStyle(
-                        duration: Duration(seconds: 1),
-                        style: _animationStyle ?? lightText(16),
-                        child: Text(
-                          _centerString,
-                        ),
+                      child:
+                          //  AnimatedDefaultTextStyle(
+                          // duration: Duration(seconds: 1),
+                          // style: _animationStyle ?? lightText(16),
+                          // child:
+                          Consumer<TimerProvider>(
+                        builder: (context, data, child) {
+                          return Text(
+                            data.getPracticeTime(),
+                          );
+                        },
                       ),
+                      // ),
                     ),
                     progressColor: Color(progressBarLight),
                     backgroundColor: Color(progressBarBg),
