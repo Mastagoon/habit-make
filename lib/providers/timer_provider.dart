@@ -3,21 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/classes/Habit.dart';
 
 class TimerProvider extends ChangeNotifier {
-  Habit? activeHabit;
-  getActiveHabit() => activeHabit ?? null;
-  getPracticeTime() {
+  Duration _duration = Duration(seconds: 0);
+
+  Duration get duration => _duration;
+
+  String getTimeString() {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes =
-        twoDigits(activeHabit!.practiceDuration.inMinutes.remainder(60));
+        twoDigits(_duration.inMinutes.remainder(60));
     final seconds =
-        twoDigits(activeHabit!.practiceDuration.inSeconds.remainder(60));
-    final hours = twoDigits(activeHabit!.practiceDuration.inHours);
+        twoDigits(_duration.inSeconds.remainder(60));
+    final hours = twoDigits(_duration.inHours);
     return "$hours:$minutes:$seconds";
   }
 
-  updateHabitPracticeTime() {
-    final secs = activeHabit!.practiceDuration.inSeconds + 1;
-    activeHabit!.practiceDuration = Duration(seconds: secs);
+  void incrementDuration() {
+    final secs = _duration.inSeconds + 1;
+    _duration = Duration(seconds: secs);
     notifyListeners();
   }
+
 }

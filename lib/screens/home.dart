@@ -3,6 +3,7 @@ import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/data/habits.dart';
 import 'package:habit_maker/providers/timer_provider.dart';
+import 'package:habit_maker/screens/components/active_habit_card.dart';
 import 'package:habit_maker/screens/components/add_habit_card.dart';
 import 'package:provider/provider.dart';
 // components
@@ -78,16 +79,13 @@ class _HomeState extends State<Home> {
             ),
             // #TODO seperator or smth
           ),
-
-          // create: (context) => TimerProvider(),
+          
+            // create: (context) => TimerProvider(),
           // child:
           Wrap(
             spacing: 10,
             children: [
-              ChangeNotifierProvider(
-                create: (context) => TimerProvider(),
-                child: HabitCard(unfinishedHabits[0]),
-              ),
+                ActiveHabitCard(unfinishedHabits[0]),
               // seperator
               Container(
                 padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
@@ -97,7 +95,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
-              // add a new habit card
+                // add a new habit card
               NewHabit(),
             ],
           ),
