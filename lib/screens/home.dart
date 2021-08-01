@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/data/habits.dart';
-import 'package:habit_maker/providers/timer_provider.dart';
 import 'package:habit_maker/screens/components/active_habit_card.dart';
 import 'package:habit_maker/screens/components/add_habit_card.dart';
-import 'package:provider/provider.dart';
 // components
 import 'components/add_habit.dart';
 import 'components/habit_card.dart';
 import 'components/bottom_controller.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -25,13 +24,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   ActiveHabitCard? activeHabit;
   late bool isActive;
   List<HabitCard> habitList = [];
+  var db;
 
   @override
-  void initState() {
+  void initState() async {
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     Timer(Duration(milliseconds: 200), () => _animationController.forward());
     isActive = true;
+    db = await openDatabase("habits.db");
 
     super.initState();
   }

@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/classes/SharedPrefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AddHabitDialog extends StatefulWidget {
   const AddHabitDialog({Key? key}) : super(key: key);
@@ -23,9 +22,11 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       habitName = "",
       habitDescription = "";
   int habitHours = 0, habitMinutes = 0;
+  var db;
 
   @override
-  void initState() {
+  void initState() async {
+    db = await openDatabase("habits.db");
     super.initState();
   }
 

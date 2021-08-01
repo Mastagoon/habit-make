@@ -37,6 +37,7 @@ dependencies:
   dotted_border: ^2.0.0
   sqflite: ^2.0.0+3
   provider: ^5.0.0
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
