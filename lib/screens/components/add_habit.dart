@@ -24,11 +24,9 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       habitName = "",
       habitDescription = "";
   int habitHours = 0, habitMinutes = 0;
-  var db;
 
   @override
-  void initState() async {
-    db = await openDatabase("habits.db");
+  void initState() {
     super.initState();
   }
 
@@ -63,7 +61,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       practiceDuration: Duration(seconds: 0), // #TODO this shouldn't be needed
     );
     // save to DB
-    DB.instance.create(habit);
+    await DB.instance.create(habit);
     // save to shared prefs
     // await SharedPrefs.set("habit1", habit.toJson());
     // Navigator.of(context).pop();

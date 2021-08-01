@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DB {
-  static final DB instance = DB._init();
+  static final DB instance = DB._initDB();
 
   static Database? _database;
 
@@ -33,7 +33,7 @@ class DB {
       ${HabitField.description} $text,
       ${HabitField.frequency} $requiredText,
       ${HabitField.practiceDuration} $requiredText,
-      ${HabitField.targetDuration} $requiredText,
+      ${HabitField.targetDuration} $requiredText
     )
     ''');
   }
@@ -80,5 +80,5 @@ class DB {
     db.close();
   }
 
-  DB._init();
+  DB._initDB();
 }

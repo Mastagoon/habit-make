@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/data/habits.dart';
+import 'package:habit_maker/model/habit.dart';
 import 'package:habit_maker/screens/components/active_habit_card.dart';
 import 'package:habit_maker/screens/components/add_habit_card.dart';
+import 'package:habit_maker/utils/db.dart';
 // components
 import 'components/add_habit.dart';
 import 'components/habit_card.dart';
@@ -24,17 +26,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   ActiveHabitCard? activeHabit;
   late bool isActive;
   List<HabitCard> habitList = [];
-  var db;
 
   @override
-  void initState() async {
+  void initState() {
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     Timer(Duration(milliseconds: 200), () => _animationController.forward());
     isActive = true;
-    db = await openDatabase("habits.db");
-
+    getHabits();
     super.initState();
+  }
+
+  void getHabits() async {
+    var habits = await DB.instance.readAllHabits();
+    setState(() {
+      habitList = habits.map((h) => HabitCard(h, startTimerCallback)).toList();
+    });
   }
 
   @override
@@ -130,8 +137,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   child: Wrap(
                     runSpacing: 10,
                     children: [
-                      HabitCard(unfinishedHabits[0], startTimerCallback),
-                      HabitCard(unfinishedHabits[1], startTimerCallback),
+                      ...habitList,
+                      // HabitCard(unfinishedHabits[0], startTimerCallback),
+                      // HabitCard(unfinishedHabits[1], startTimerCallback),
                       NewHabit(),
                     ],
                   ),

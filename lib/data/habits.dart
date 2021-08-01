@@ -1,5 +1,4 @@
-import 'package:habit_maker/classes/Habit.dart';
-import 'package:habit_maker/screens/components/habit_card.dart';
+import 'package:habit_maker/model/habit.dart';
 
 // a list of habits
 

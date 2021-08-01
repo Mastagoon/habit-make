@@ -55,9 +55,11 @@ class Habit {
       description: json[HabitField.description] as String,
       frequency: json[HabitField.frequency] as String,
       practiceDuration:
-          Duration(seconds: json[HabitField.practiceDuration] as int),
+          Duration(
+          seconds: int.parse(json[HabitField.practiceDuration] as String)),
       targetDuration:
-          Duration(seconds: json[HabitField.targetDuration] as int));
+          Duration(
+          seconds: int.parse(json[HabitField.targetDuration] as String)));
 
   Map<String, Object?> toJson() => {
         HabitField.id: id,
