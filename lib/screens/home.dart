@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
@@ -18,7 +20,28 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  ActiveHabitCard? activeHabit;
+  late bool isActive;
+  List<HabitCard> habitList = [];
+
+  @override
+  void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    Timer(Duration(milliseconds: 200), () => _animationController.forward());
+    isActive = true;
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,30 +96,48 @@ class _HomeState extends State<Home> {
           Container(
             padding: EdgeInsets.only(top: 15, bottom: 15, left: 5),
             child: Text(
-              "Overview",
+              "Active",
               style: lightText(22),
               textAlign: TextAlign.left,
             ),
             // #TODO seperator or smth
           ),
-          
-            // create: (context) => TimerProvider(),
+          // active timer
+          if (activeHabit != null) activeHabitCardBuilder(activeHabit),
+
+          // activeHabitCardBuilder(),
+          // create: (context) => TimerProvider(),
           // child:
           Wrap(
-            spacing: 10,
+            runSpacing: 10,
             children: [
-                ActiveHabitCard(unfinishedHabits[0]),
+              // active card
+              // ActiveHabitCard(unfinishedHabits[0]),
               // seperator
               Container(
                 padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
                 child: Text(
-                  "Practiced Today",
+                  "Unfinished",
                   style: hintText(16),
                 ),
               ),
+              SlideTransition(
+                position: Tween<Offset>(begin: Offset(0, 1), end: Offset.zero)
+                    .animate(_animationController),
+                child: FadeTransition(
+                  opacity: _animationController,
+                  child: Wrap(
+                    runSpacing: 10,
+                    children: [
+                      HabitCard(unfinishedHabits[0], startTimerCallback),
+                      HabitCard(unfinishedHabits[1], startTimerCallback),
+                      NewHabit(),
+                    ],
+                  ),
+                ),
+              ),
 
-                // add a new habit card
-              NewHabit(),
+              // add a new habit card
             ],
           ),
           // ),
@@ -104,5 +145,15 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  ActiveHabitCard activeHabitCardBuilder(activeHabit) {
+    return activeHabit;
+  }
+
+  startTimerCallback(habit) {
+    setState(() {
+      activeHabit = ActiveHabitCard(habit);
+    });
   }
 }

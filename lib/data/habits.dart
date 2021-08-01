@@ -12,7 +12,7 @@ List<Habit> unfinishedHabits = [
     targetDuration: Duration(seconds: 3600),
   ),
   Habit(
-    name: "Dance Tango",
+    name: "Dance",
     description: "the activity of dancing the dances of tango",
     frequency: "daily",
     practiceDuration: Duration(seconds: 0),

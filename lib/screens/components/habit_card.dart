@@ -11,7 +11,8 @@ import 'add_habit.dart';
 
 class HabitCard extends StatefulWidget {
   Habit habit;
-  HabitCard(this.habit);
+  var startTimerCallback;
+  HabitCard(this.habit, this.startTimerCallback);
 
   @override
   _HabitCardState createState() => _HabitCardState();
@@ -48,6 +49,9 @@ class _HabitCardState extends State<HabitCard> {
   }
 
   void toggleTimer() {
+    widget.startTimerCallback(widget.habit);
+    return;
+
     if (!_timerState) {
       // start timer
       _timerState = true; // prevent spam
@@ -96,8 +100,8 @@ class _HabitCardState extends State<HabitCard> {
             (_practiceDuration.inSeconds / _targetDuration.inSeconds);
         _percentageString = "${(_progressPercentage * 100).round()}%";
         _centerString = _percentageString ?? "0%";
-        _animationTimer =
-            Timer.periodic(Duration(seconds: 5), (_) => animateText());
+        // _animationTimer =
+        //     Timer.periodic(Duration(seconds: 5), (_) => animateText());
       });
   }
 
@@ -108,7 +112,7 @@ class _HabitCardState extends State<HabitCard> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: Color(_completed == true ? secondaryColor : primaryColor),
+            color: Color(secondaryColor),
             boxShadow: [
               BoxShadow(
                 color: Color(secondaryColor).withOpacity(0.4),
@@ -185,6 +189,7 @@ class _HabitCardState extends State<HabitCard> {
                   ),
                   onPressed: toggleTimer,
                   child: CircularPercentIndicator(
+                    circularStrokeCap: CircularStrokeCap.round,
                     animation: true,
                     animationDuration: 1000,
                     radius: 90,
@@ -220,7 +225,7 @@ class _HabitCardState extends State<HabitCard> {
                       height: 40,
                       child: ElevatedButton(
                         onPressed: () {},
-                        style: cardButton(_completed ?? true),
+                        style: cardButton(true),
                         child: IconButton(
                           onPressed: () {},
                           icon: Icon(
@@ -237,7 +242,7 @@ class _HabitCardState extends State<HabitCard> {
                       width: 40,
                       height: 40,
                       child: ElevatedButton(
-                        style: cardButton(_completed ?? true),
+                        style: cardButton(true),
                         onPressed: () {},
                         child: IconButton(
                           onPressed: () {},
