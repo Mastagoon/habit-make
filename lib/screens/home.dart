@@ -153,7 +153,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   startTimerCallback(habit) {
     setState(() {
-      activeHabit = ActiveHabitCard(habit);
+      activeHabit = ActiveHabitCard(habit, endTimerCallback);
+    });
+  }
+
+  endTimerCallback(habit) {
+    setState(() {
+      activeHabit = null;
     });
   }
 }
