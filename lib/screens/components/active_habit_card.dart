@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
+import 'package:habit_maker/model/habit.dart';
 import 'package:habit_maker/utils/formatDuration.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -19,6 +20,7 @@ class ActiveHabitCard extends StatefulWidget {
 class _ActiveHabitCardState extends State<ActiveHabitCard> {
   String _percentageString = "0%", _timerString = "00:00:00";
   double _progressPercentage = 0;
+  Duration? _practiceDuration;
   Timer? _timer;
 
   @override
@@ -30,16 +32,17 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
     _percentageString = "${(_progressPercentage * 100).round()}%";
     _timerString = formatDuration(widget.habit.practiceDuration);
     _timer = Timer.periodic(Duration(seconds: 1), (_) => updateTimer());
+    _practiceDuration = widget.habit.practiceDuration;
   }
 
   void updateTimer() {
     setState(() {
-      final secs = widget.habit.practiceDuration.inSeconds + 1;
-      widget.habit.practiceDuration = Duration(seconds: secs);
-      _progressPercentage = (widget.habit.practiceDuration.inSeconds /
+      final secs = _practiceDuration!.inSeconds + 1;
+      _practiceDuration = Duration(seconds: secs);
+      _progressPercentage = (_practiceDuration!.inSeconds /
           widget.habit.targetDuration.inSeconds);
       _percentageString = "${(_progressPercentage * 100).round()}%";
-      _timerString = formatDuration(widget.habit.practiceDuration);
+      _timerString = formatDuration(_practiceDuration);
     });
   }
 

@@ -5,6 +5,8 @@ import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/classes/SharedPrefs.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
+import 'package:habit_maker/model/habit.dart';
+import 'package:habit_maker/utils/db.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -60,9 +62,11 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       targetDuration: Duration(hours: habitHours, minutes: habitMinutes),
       practiceDuration: Duration(seconds: 0), // #TODO this shouldn't be needed
     );
+    // save to DB
+    DB.instance.create(habit);
     // save to shared prefs
-    await SharedPrefs.set("habit1", habit.toJson());
-    Navigator.of(context).pop();
+    // await SharedPrefs.set("habit1", habit.toJson());
+    // Navigator.of(context).pop();
     showSnackBar("Habit added successfully!", successColor);
   }
 
