@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/model/habit.dart';
+import 'package:habit_maker/utils/db.dart';
 import 'package:habit_maker/utils/formatDuration.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+// ignore: must_be_immutable
 class ActiveHabitCard extends StatefulWidget {
   Habit habit;
   var endTimerCallback;
@@ -25,7 +26,6 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _progressPercentage = (widget.habit.practiceDuration.inSeconds /
         widget.habit.targetDuration.inSeconds);
@@ -48,7 +48,15 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
 
   void stopTimer() {
     _timer?.cancel();
-    this.widget.endTimerCallback(widget.habit);
+    Habit updatedHabit = Habit(
+        id: widget.habit.id,
+        description: widget.habit.description,
+        name: widget.habit.name,
+        frequency: widget.habit.frequency,
+        targetDuration: widget.habit.targetDuration,
+        practiceDuration: _practiceDuration ?? widget.habit.practiceDuration);
+    print(updatedHabit.id);
+    this.widget.endTimerCallback(updatedHabit);
   }
 
   @override

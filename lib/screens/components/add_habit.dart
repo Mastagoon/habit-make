@@ -64,7 +64,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
     await DB.instance.create(habit);
     // save to shared prefs
     // await SharedPrefs.set("habit1", habit.toJson());
-    // Navigator.of(context).pop();
+    Navigator.of(context).pop(); // #TODO update home ui
     showSnackBar("Habit added successfully!", successColor);
   }
 

@@ -166,7 +166,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
-  endTimerCallback(habit) {
+  endTimerCallback(habit) async {
+    // update habit
+    print(habit);
+    await DB.instance.update(habit);
     setState(() {
       activeHabit = null;
     });

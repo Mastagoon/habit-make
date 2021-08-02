@@ -42,6 +42,7 @@ class DB {
     final db = await instance.database;
     final id = await db.insert(tableHabits, habit.toJson());
     print("Creating the thing");
+    print("habit id: $id");
     return habit.copy(id: id);
   }
 
