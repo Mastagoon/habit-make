@@ -1,6 +1,5 @@
 // timer is attached on one habit only
 import 'package:flutter/material.dart';
-import 'package:habit_maker/classes/Habit.dart';
 
 class TimerProvider extends ChangeNotifier {
   Duration _duration = Duration(seconds: 0);

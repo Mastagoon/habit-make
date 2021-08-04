@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
-import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/model/habit.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:habit_maker/constants/colors.dart';
