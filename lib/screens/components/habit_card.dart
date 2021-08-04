@@ -11,8 +11,8 @@ import 'add_habit.dart';
 
 class HabitCard extends StatefulWidget {
   Habit habit;
-  var startTimerCallback;
-  HabitCard(this.habit, this.startTimerCallback);
+  var startTimerCallback, editHabitCallback;
+  HabitCard(this.habit, this.startTimerCallback, this.editHabitCallback);
 
   @override
   _HabitCardState createState() => _HabitCardState();
@@ -30,40 +30,14 @@ class _HabitCardState extends State<HabitCard> {
   bool _timerState = false;
   double _progressPercentage = 0;
 
-  // TODO end me
-  void animateText() {
-    if (large) {
-      print("Enlarging text...");
-      setState(() {
-        _animationStyle = percentageCenterStartStyle(16);
-        _centerString = _practiceString;
-      });
-    } else {
-      print("Enlargingn't text...");
-      setState(() {
-        _animationStyle = percentageCenterStartStyle(16);
-        _centerString = _percentageString ?? "0%";
-      });
-    }
-    large = !large;
+  void editHabit() {
+    print("PRESSED");
+    this.widget.editHabitCallback(this.widget.habit);
   }
 
   void toggleTimer() {
     widget.startTimerCallback(widget.habit);
     return;
-
-    if (!_timerState) {
-      // start timer
-      _timerState = true; // prevent spam
-      _animationTimer?.cancel();
-      _clockTimer = Timer.periodic(Duration(seconds: 1), (_) => updateTimer());
-      _centerString = _practiceString;
-    } else {
-      _timerState = false;
-      _clockTimer?.cancel();
-      _animationTimer =
-          Timer.periodic(Duration(seconds: 5), (_) => animateText());
-    }
   }
 
   void updateTimer() {
@@ -100,8 +74,6 @@ class _HabitCardState extends State<HabitCard> {
             (_practiceDuration.inSeconds / _targetDuration.inSeconds);
         _percentageString = "${(_progressPercentage * 100).round()}%";
         _centerString = _percentageString ?? "0%";
-        // _animationTimer =
-        //     Timer.periodic(Duration(seconds: 5), (_) => animateText());
       });
   }
 
@@ -243,9 +215,9 @@ class _HabitCardState extends State<HabitCard> {
                       height: 40,
                       child: ElevatedButton(
                         style: cardButton(true),
-                        onPressed: () {},
+                        onPressed: editHabit,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: editHabit,
                           icon: Icon(
                             Icons.settings,
                             color: Colors.white,

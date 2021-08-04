@@ -7,6 +7,7 @@ import 'package:habit_maker/data/habits.dart';
 import 'package:habit_maker/model/habit.dart';
 import 'package:habit_maker/screens/components/active_habit_card.dart';
 import 'package:habit_maker/screens/components/add_habit_card.dart';
+import 'package:habit_maker/screens/components/edit_habit.dart';
 import 'package:habit_maker/utils/db.dart';
 // components
 import 'components/add_habit.dart';
@@ -33,15 +34,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     Timer(Duration(milliseconds: 200), () => _animationController.forward());
     isActive = true;
-    getHabits();
+    getHabitList();
     super.initState();
   }
 
-  void getHabits() async {
+  void getHabitList() async {
     var habits = await DB.instance.readAllHabits();
     print("Hlist: ${habits[0].id}");
     setState(() {
-      habitList = habits.map((h) => HabitCard(h, startTimerCallback)).toList();
+      habitList = habits
+          .map((h) => HabitCard(h, startTimerCallback, editHabitCallback))
+          .toList();
     });
     var hab = await DB.instance.read(3);
     print("Habb: ${hab?.id}");
@@ -54,8 +57,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
+  showSnackBar(String message, int color) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        message,
+        style: lightText(18),
+      ),
+      backgroundColor: Color(color),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("REBUILDIn'");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -124,7 +138,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             runSpacing: 10,
             children: [
               // active card
-              // ActiveHabitCard(unfinishedHabits[0]),
               // seperator
               Container(
                 padding: EdgeInsets.only(left: 5, top: 15, bottom: 10),
@@ -142,8 +155,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     runSpacing: 10,
                     children: [
                       ...habitList,
-                      // HabitCard(unfinishedHabits[0], startTimerCallback),
-                      // HabitCard(unfinishedHabits[1], startTimerCallback),
                       NewHabit(),
                     ],
                   ),
@@ -177,5 +188,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     setState(() {
       activeHabit = null;
     });
+  }
+
+  editHabitCallback(habit) async {
+    showDialog(
+        context: context,
+        builder: (context) =>
+            EditHabitDialog(habit, deleteHabitCallback, updateHabitCallback));
+  }
+
+  deleteHabitCallback(id) async {
+    await DB.instance.delete(id);
+    getHabitList();
+    setState(() {});
+    showSnackBar("Habit deleted successfully.", successColor);
+  }
+
+  updateHabitCallback(habit) async {
+    await DB.instance.update(habit);
+    getHabitList();
+    setState(() {});
+    showSnackBar("Habit updated successfully", successColor);
   }
 }

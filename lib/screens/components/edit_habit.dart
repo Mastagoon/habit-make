@@ -1,68 +1,72 @@
+import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/model/habit.dart';
 import 'package:habit_maker/utils/db.dart';
 import 'package:numberpicker/numberpicker.dart';
 
-class AddHabitDialog extends StatefulWidget {
-  const AddHabitDialog({Key? key}) : super(key: key);
+class EditHabitDialog extends StatefulWidget {
+  Habit habit;
+  var deleteHabitCallback, updateHabitCallback;
+  EditHabitDialog(
+      this.habit, this.deleteHabitCallback, this.updateHabitCallback);
 
   @override
-  _AddHabitDialogState createState() => _AddHabitDialogState();
+  _EditHabitDialogState createState() => _EditHabitDialogState();
 }
 
-class _AddHabitDialogState extends State<AddHabitDialog> {
-  // list
+class _EditHabitDialogState extends State<EditHabitDialog> {
   static final List<String> frequency = <String>["Daily", "Weekly", "Monthly"];
-  String habitFrequency = frequency.first,
-      habitName = "",
-      habitDescription = "";
-  int habitHours = 0, habitMinutes = 0;
 
-  @override
-  void initState() {
-    super.initState();
+  String? newName, newDescription, newFrequency;
+  int newHours = 0, newMinuets = 0;
+
+  updateHabit() {
+    Duration targetDuration = (newHours + newMinuets > 0)
+        ? Duration(hours: newHours, minutes: newMinuets)
+        : widget.habit.practiceDuration;
+    var habit = new Habit(
+        id: widget.habit.id,
+        name: newName ?? widget.habit.name,
+        description: newDescription ?? widget.habit.description,
+        frequency: newFrequency ?? widget.habit.frequency,
+        practiceDuration: widget.habit.practiceDuration,
+        targetDuration: targetDuration);
+    //update
+    Navigator.of(context).pop();
+    return widget.updateHabitCallback(habit);
   }
 
-  showSnackBar(String message, int color) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        message,
-        style: lightText(18),
-      ),
-      backgroundColor: Color(color),
-    ));
+  deleteHabitAlert() {
+    print("PRESSEd");
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Confirm"),
+            content: Text("Are you sure you want to delete this habit?"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  deleteHabit();
+                },
+                child: Text("Yes"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Cancel"),
+              )
+            ],
+          );
+        });
   }
 
-  void setNewHabit() async {
-    // check if name is set
-    if (habitName.length < 1) {
-      showSnackBar("Habit name field is required!", dangerColor);
-      return;
-    }
-    // check duration
-    if (habitMinutes < 1 && habitHours < 1) {
-      showSnackBar("Habit frequency and duration must be set!", dangerColor);
-      return;
-    }
-    // passed all checks
-    // save new habit
-    var habit = Habit(
-      name: habitName,
-      description: habitDescription,
-      frequency: habitFrequency,
-      targetDuration: Duration(hours: habitHours, minutes: habitMinutes),
-      practiceDuration: Duration(seconds: 0), // #TODO this shouldn't be needed
-    );
-    // save to DB
-    await DB.instance.create(habit);
-    // save to shared prefs
-    // await SharedPrefs.set("habit1", habit.toJson());
-    Navigator.of(context).pop(); // #TODO update home ui
-    showSnackBar("Habit added successfully!", successColor);
+  deleteHabit() {
+    Navigator.of(context).pop();
+    return widget.deleteHabitCallback(widget.habit.id);
   }
 
   @override
@@ -93,7 +97,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                       ),
                     ),
                     TextField(
-                      onChanged: (text) => setState(() => habitName = text),
+                      onChanged: (text) => setState(() => newName = text),
                       style: lightText(18),
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
@@ -107,6 +111,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                         // ),
                         labelText: "Habit Name",
                         labelStyle: hintText(16),
+                        hintText: widget.habit.name,
                         fillColor: Colors.white,
                         // prefixIcon: Icon(Icons.description),
                       ),
@@ -117,7 +122,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                     TextField(
                       style: lightText(18),
                       onChanged: (text) =>
-                          setState(() => habitDescription = text),
+                          setState(() => newDescription = text),
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white),
@@ -129,6 +134,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                         //   borderSide: BorderSide(color: Color(primaryColor)),
                         // ),
                         labelText: "Description",
+                        hintText: widget.habit.description,
                         labelStyle: hintText(16),
                       ),
                     ),
@@ -156,7 +162,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                             // #TODO create your own dropdown menu
                             child: DropdownButton(
                               isExpanded: true,
-                              value: habitFrequency,
+                              value: widget.habit.frequency,
                               items: frequency
                                   .map(
                                     (item) => DropdownMenuItem<String>(
@@ -169,7 +175,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                                   )
                                   .toList(),
                               onChanged: (value) => setState(() {
-                                this.habitFrequency = value.toString();
+                                newFrequency = value.toString();
                               }),
                             ),
                           ),
@@ -179,27 +185,12 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                     SizedBox(
                       height: 15,
                     ),
-                    // Container(
-                    //   padding: EdgeInsets.only(top: 10, bottom: 10),
-                    //   child: Text(
-                    //     "Time",
-                    //     style: lightText(18),
-                    //   ),
-                    // ),
                     // choose time
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Column(
                           children: [
-                            // ElevatedButton(
-                            //   style: RoundedButton(primaryColor, 20),
-                            //   onPressed: () {},
-                            //   child: Text(
-                            //     "00",
-                            //     style: lightText(18),
-                            //   ),
-                            // ),
                             Text(
                               "HOURS",
                               style: lightText(16),
@@ -210,7 +201,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                             NumberPicker(
                               minValue: 0,
                               maxValue: 23,
-                              value: habitHours,
+                              value: newHours,
                               textStyle: lightText(16),
                               selectedTextStyle: lightText(18),
                               decoration: BoxDecoration(
@@ -218,7 +209,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                                 border: Border.all(color: Color(primaryColor)),
                               ),
                               onChanged: (value) =>
-                                  setState(() => habitHours = value),
+                                  setState(() => newHours = value),
                             ),
                           ],
                         ),
@@ -242,7 +233,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                             NumberPicker(
                               minValue: 0,
                               maxValue: 59,
-                              value: habitMinutes,
+                              value: newMinuets,
                               textStyle: lightText(16),
                               selectedTextStyle: lightText(18),
                               decoration: BoxDecoration(
@@ -250,11 +241,19 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                                 border: Border.all(color: Color(primaryColor)),
                               ),
                               onChanged: (value) =>
-                                  setState(() => habitMinutes = value),
+                                  setState(() => newMinuets = value),
                             ),
                           ],
-                        )
+                        ),
                       ],
+                    ),
+                    ElevatedButton(
+                      onPressed: deleteHabitAlert,
+                      child: Text(
+                        "Delete Habit",
+                        style: lightText(18),
+                      ),
+                      style: generalButtonStyle(dangerColor, 19, 10),
                     ),
                     // buttons
                     Row(
@@ -270,7 +269,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                           style: generalButtonStyle(dangerColor, 15, 10),
                         ),
                         ElevatedButton(
-                          onPressed: setNewHabit,
+                          onPressed: updateHabit,
                           child: Text(
                             "Save",
                             style: lightText(18),
