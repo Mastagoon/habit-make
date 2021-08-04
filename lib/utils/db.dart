@@ -1,5 +1,4 @@
 // db manager
-import 'package:habit_maker/classes/Habit.dart';
 import 'package:habit_maker/model/habit.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -40,10 +39,9 @@ class DB {
 
   Future<Habit> create(Habit habit) async {
     final db = await instance.database;
-    final id = await db.insert(tableHabits, habit.toJson());
-    print("Creating the thing");
-    print("habit id: $id");
-    return habit.copy(id: id);
+    final id = await db.insert(tableHabits, habit.toJsonInsert());
+    habit = habit.copy(newId: id);
+    return habit;
   }
 
   Future<Habit?> read(int id) async {
@@ -52,7 +50,6 @@ class DB {
         columns: HabitField.values,
         where: "${HabitField.id} = ?",
         whereArgs: [id]);
-    print("reading the thing");
     if (maps.isNotEmpty) return Habit.fromJson(maps.first);
     return null;
   }
@@ -60,7 +57,6 @@ class DB {
   Future<List<Habit>> readAllHabits() async {
     final db = await instance.database;
     final result = await db.query(tableHabits);
-    print("reading the stuff");
     return result.map((json) => Habit.fromJson(json)).toList();
   }
 

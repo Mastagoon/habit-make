@@ -39,9 +39,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   void getHabits() async {
     var habits = await DB.instance.readAllHabits();
+    print("Hlist: ${habits[0].id}");
     setState(() {
       habitList = habits.map((h) => HabitCard(h, startTimerCallback)).toList();
     });
+    var hab = await DB.instance.read(3);
+    print("Habb: ${hab?.id}");
+    print("Habb: ${hab?.name}");
   }
 
   @override
@@ -168,7 +172,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   endTimerCallback(habit) async {
     // update habit
-    print(habit);
+    print(habit.id);
     await DB.instance.update(habit);
     setState(() {
       activeHabit = null;
