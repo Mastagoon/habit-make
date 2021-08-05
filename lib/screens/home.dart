@@ -82,7 +82,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: IconButton(
               onPressed: () => showDialog(
                 context: context,
-                builder: (context) => AddHabitDialog(),
+                builder: (context) => AddHabitDialog(createHabitCallback),
               ),
               icon: Icon(Icons.add_circle_outline_outlined),
               iconSize: 30,
@@ -155,7 +155,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     runSpacing: 10,
                     children: [
                       ...habitList,
-                      NewHabit(),
+                      NewHabit(createHabitCallback),
                     ],
                   ),
                 ),
@@ -183,11 +183,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   endTimerCallback(habit) async {
     // update habit
-    print(habit.id);
     await DB.instance.update(habit);
-    setState(() {
-      activeHabit = null;
-    });
+    getHabitList();
+    setState(() {});
+  }
+
+  createHabitCallback(habit) async {
+    getHabitList();
+    setState(() {});
   }
 
   editHabitCallback(habit) async {

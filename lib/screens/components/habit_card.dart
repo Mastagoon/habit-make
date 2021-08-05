@@ -1,13 +1,10 @@
-import 'dart:async';
 
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:habit_maker/model/habit.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 
-import 'add_habit.dart';
 
 class HabitCard extends StatefulWidget {
   Habit habit;
@@ -23,11 +20,8 @@ class _HabitCardState extends State<HabitCard> {
   String _practiceString = "00:00:00", _centerString = "0%";
   Duration _practiceDuration = Duration(seconds: 0),
       _targetDuration = Duration(seconds: 0);
-  bool? _completed;
   TextStyle? _animationStyle;
-  Timer? _animationTimer, _clockTimer;
   bool large = false;
-  bool _timerState = false;
   double _progressPercentage = 0;
 
   void editHabit() {
@@ -60,6 +54,8 @@ class _HabitCardState extends State<HabitCard> {
   @override
   void initState() {
     super.initState();
+    print(widget.habit.practiceDuration);
+    print(widget.habit.targetDuration);
 
     if (this.mounted)
       setState(() {
@@ -69,9 +65,8 @@ class _HabitCardState extends State<HabitCard> {
         _targetDuration = widget.habit.targetDuration;
         _practiceString = formatDuration(_practiceDuration);
         _animationStyle = lightText(16);
-        _completed = _practiceDuration >= _targetDuration;
         _progressPercentage =
-            (_practiceDuration.inSeconds / _targetDuration.inSeconds);
+            (_practiceDuration.inSeconds / (_targetDuration.inSeconds + 1));
         _percentageString = "${(_progressPercentage * 100).round()}%";
         _centerString = _percentageString ?? "0%";
       });

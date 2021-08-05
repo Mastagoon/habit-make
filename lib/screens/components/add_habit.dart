@@ -8,7 +8,8 @@ import 'package:habit_maker/utils/db.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class AddHabitDialog extends StatefulWidget {
-  const AddHabitDialog({Key? key}) : super(key: key);
+  final createHabitCallback;
+  const AddHabitDialog(this.createHabitCallback);
 
   @override
   _AddHabitDialogState createState() => _AddHabitDialogState();
@@ -60,8 +61,8 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
     // save to DB
     await DB.instance.create(habit);
     // save to shared prefs
-    // await SharedPrefs.set("habit1", habit.toJson());
-    Navigator.of(context).pop(); // #TODO update home ui
+    Navigator.of(context).pop();
+    widget.createHabitCallback();
     showSnackBar("Habit added successfully!", successColor);
   }
 

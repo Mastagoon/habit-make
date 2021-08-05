@@ -6,9 +6,8 @@ import 'package:habit_maker/constants/styles.dart';
 import 'add_habit.dart';
 
 class NewHabit extends StatelessWidget {
-  const NewHabit({
-    Key? key,
-  }) : super(key: key);
+  final createHabitCallback;
+  const NewHabit(this.createHabitCallback);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class NewHabit extends StatelessWidget {
           child: OutlinedButton(
             onPressed: () => showDialog(
               context: context,
-              builder: (context) => AddHabitDialog(),
+              builder: (context) => AddHabitDialog(createHabitCallback),
             ),
             style: ButtonStyle(
                 padding: MaterialStateProperty.all(
@@ -46,7 +45,11 @@ class NewHabit extends StatelessWidget {
                   children: [
                     IconButton(
                       padding: EdgeInsets.all(0),
-                      onPressed: () {},
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) =>
+                            AddHabitDialog(createHabitCallback),
+                      ),
                       icon: Icon(
                         Icons.add_circle_outline,
                         color: Color(primaryColor).withOpacity(0.5),
