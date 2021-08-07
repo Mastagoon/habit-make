@@ -46,9 +46,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           .map((h) => HabitCard(h, startTimerCallback, editHabitCallback))
           .toList();
     });
-    var hab = await DB.instance.read(3);
-    print("Habb: ${hab?.id}");
-    print("Habb: ${hab?.name}");
   }
 
   @override
@@ -183,7 +180,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   endTimerCallback(habit) async {
     // update habit
-    await DB.instance.update(habit);
+    await DB.instance.updateHabit(habit);
     getHabitList();
     setState(() => activeHabit = null);
   }
@@ -201,14 +198,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   deleteHabitCallback(id) async {
-    await DB.instance.delete(id);
+    await DB.instance.deleteHabit(id);
     getHabitList();
     setState(() {});
     showSnackBar("Habit deleted successfully.", successColor);
   }
 
   updateHabitCallback(habit) async {
-    await DB.instance.update(habit);
+    await DB.instance.updateHabit(habit);
     getHabitList();
     setState(() {});
     showSnackBar("Habit updated successfully", successColor);

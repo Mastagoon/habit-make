@@ -59,7 +59,7 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
       practiceDuration: Duration(seconds: 0), // #TODO this shouldn't be needed
     );
     // save to DB
-    await DB.instance.create(habit);
+    await DB.instance.createHabit(habit);
     // save to shared prefs
     Navigator.of(context).pop();
     widget.createHabitCallback();
