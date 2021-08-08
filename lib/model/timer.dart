@@ -5,14 +5,14 @@ class TimerField {
   static final String habitId = "habit_id";
   static final String startTime = "start_time";
   static final String endTime = "end_time";
-  static final String status = "status";
+  static final String isActive = "isActive";
 
   static final List<String> values = [
     id,
     habitId,
     startTime,
     endTime,
-    status,
+    isActive,
   ];
 }
 
@@ -21,28 +21,28 @@ class HabitTimer {
   final int? habitId;
   final DateTime? startTime;
   final DateTime? endTime;
-  final bool? status;
+  final bool? isActive;
 
   HabitTimer(
       {this.id,
       required this.habitId,
       required this.startTime,
       this.endTime,
-      required this.status});
+      required this.isActive});
 
   HabitTimer copy({
     int? id,
     int? habitId,
     DateTime? startTime,
     DateTime? endTime,
-    bool? status,
+    bool? isActive,
   }) =>
       HabitTimer(
           id: id ?? this.id,
           habitId: habitId ?? this.habitId,
           startTime: startTime ?? this.startTime,
           endTime: endTime ?? this.endTime,
-          status: status ?? this.status);
+          isActive: isActive ?? this.isActive);
 
   static HabitTimer fromJson(Map<String, Object?> json) => HabitTimer(
       id: json[TimerField.id] as int,
@@ -51,19 +51,19 @@ class HabitTimer {
           int.parse(json[TimerField.startTime] as String)),
       endTime: DateTime.fromMillisecondsSinceEpoch(
           int.parse(json[TimerField.endTime] as String)),
-      status: json[TimerField.status] == 0 ? false : true);
+      isActive: json[TimerField.isActive] == 0 ? false : true);
 
   Map<String, Object?> toJson() => {
         TimerField.id: id,
         TimerField.habitId: habitId,
         TimerField.startTime: startTime?.millisecondsSinceEpoch.toString(),
         TimerField.endTime: endTime?.millisecondsSinceEpoch.toString(),
-        TimerField.status: status == true ? 1 : 0
+        TimerField.isActive: isActive == true ? 1 : 0
       };
   Map<String, Object?> toJsonInsert() => {
         TimerField.habitId: habitId,
         TimerField.startTime: startTime?.millisecondsSinceEpoch.toString(),
         TimerField.endTime: endTime?.millisecondsSinceEpoch.toString(),
-        TimerField.status: status == true ? 1 : 0
+        TimerField.isActive: isActive == true ? 1 : 0
       };
 }

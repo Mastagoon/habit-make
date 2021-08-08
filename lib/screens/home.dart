@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
-import 'package:habit_maker/data/habits.dart';
-import 'package:habit_maker/model/habit.dart';
+import 'package:habit_maker/model/timer.dart';
 import 'package:habit_maker/screens/components/active_habit_card.dart';
 import 'package:habit_maker/screens/components/add_habit_card.dart';
 import 'package:habit_maker/screens/components/edit_habit.dart';
@@ -13,7 +12,6 @@ import 'package:habit_maker/utils/db.dart';
 import 'components/add_habit.dart';
 import 'components/habit_card.dart';
 import 'components/bottom_controller.dart';
-import 'package:sqflite/sqflite.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -34,18 +32,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     Timer(Duration(milliseconds: 200), () => _animationController.forward());
     isActive = true;
-    getHabitList();
+    refreshHabitList();
     super.initState();
   }
 
-  void getHabitList() async {
-    var habits = await DB.instance.readAllHabits();
-    print("Hlist: ${habits[0].id}");
+  void refreshHabitList() async {
+    var habits = await DB.instance.getAllHabits();
     setState(() {
       habitList = habits
           .map((h) => HabitCard(h, startTimerCallback, editHabitCallback))
           .toList();
     });
+    // get active timer
+    final activeTimer = await DB.instance.getActiveTimer();
+    if (activeTimer != null) {
+      final habit = await DB.instance.getHabit(activeTimer.habitId);
+      if (habit != null)
+        setState(() {
+          activeHabit = ActiveHabitCard(habit, activeTimer, endTimerCallback);
+        });
+    }
   }
 
   @override
@@ -66,7 +72,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("REBUILDIn'");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -104,8 +109,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         // #TODO reduce col's width (too wide)
         child: buildHabitCards(),
       ),
-      // bottom controller thingy
-      // bottomSheet: BottomController(),
     );
   }
 
@@ -127,10 +130,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
           // active timer
           if (activeHabit != null) activeHabitCardBuilder(activeHabit),
-
-          // activeHabitCardBuilder(),
-          // create: (context) => TimerProvider(),
-          // child:
           Wrap(
             runSpacing: 10,
             children: [
@@ -157,12 +156,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ),
-
-              // add a new habit card
             ],
           ),
-          // ),
-          // unfinished habits for the day
         ],
       ),
     );
@@ -174,19 +169,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   startTimerCallback(habit) {
     setState(() {
-      activeHabit = ActiveHabitCard(habit, endTimerCallback);
+      // create a new timer
+      final timer = HabitTimer(
+          habitId: habit.id, startTime: DateTime.now(), isActive: true);
+      activeHabit = ActiveHabitCard(habit, timer, endTimerCallback);
     });
   }
 
   endTimerCallback(habit) async {
+    // stop timer
+    final timer = activeHabit?.timer;
+    if (timer != null)
+      await DB.instance.updateHabitTimer(
+          timer.copy(endTime: DateTime.now(), isActive: false));
     // update habit
     await DB.instance.updateHabit(habit);
-    getHabitList();
+    refreshHabitList();
     setState(() => activeHabit = null);
   }
 
   createHabitCallback() async {
-    getHabitList();
+    refreshHabitList();
     setState(() {});
   }
 
@@ -199,14 +202,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   deleteHabitCallback(id) async {
     await DB.instance.deleteHabit(id);
-    getHabitList();
+    refreshHabitList();
     setState(() {});
     showSnackBar("Habit deleted successfully.", successColor);
   }
 
   updateHabitCallback(habit) async {
     await DB.instance.updateHabit(habit);
-    getHabitList();
+    refreshHabitList();
     setState(() {});
     showSnackBar("Habit updated successfully", successColor);
   }

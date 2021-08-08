@@ -1,10 +1,11 @@
 // db manager
+import 'dart:async';
+
 import 'package:habit_maker/model/habit.dart';
 import 'package:habit_maker/model/timer.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:collection/collection.dart';
-
 
 class DB {
   static final DB instance = DB._initDB();
@@ -20,7 +21,8 @@ class DB {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path,
+        version: 2, onCreate: _createDB, onUpgrade: _upgrade1);
   }
 
   Future _createDB(Database db, int version) async {
@@ -43,9 +45,16 @@ class DB {
       ${TimerField.habitId} $requiredInt,
       ${TimerField.startTime} $text,
       ${TimerField.endTime} $text,
-      ${TimerField.status} $requiredInt
+      ${TimerField.isActive} $requiredInt
     )
     ''');
+  }
+
+  FutureOr<void> _upgrade1(Database db, int oldVersion, int newVersion) async {
+    await db.execute('''
+    ALTER TABLE $tableTimer ADD COLUMN isActive INTEGER DEFAULT 0  
+    ''');
+    print("db upgraded.");
   }
 
   Future<Habit> createHabit(Habit habit) async {
@@ -62,7 +71,7 @@ class DB {
     return timer;
   }
 
-  Future<Habit?> readHabit(int id) async {
+  Future<Habit?> getHabit(int? id) async {
     final db = await instance.database;
     final maps = await db.query(tableHabits,
         columns: HabitField.values,
@@ -82,7 +91,17 @@ class DB {
     return null;
   }
 
-  Future<List<Habit>> readAllHabits() async {
+  Future<HabitTimer?> getActiveTimer() async {
+    final db = await instance.database;
+    final maps = await db.query(tableHabits,
+        columns: TimerField.values,
+        where: "${TimerField.isActive} = ?",
+        whereArgs: [1]);
+    if (maps.isNotEmpty) return HabitTimer.fromJson(maps.first);
+    return null;
+  }
+
+  Future<List<Habit>> getAllHabits() async {
     final db = await instance.database;
     final result = await db.query(tableHabits);
     return result.map((json) => Habit.fromJson(json)).toList();

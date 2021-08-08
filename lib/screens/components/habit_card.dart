@@ -25,7 +25,6 @@ class _HabitCardState extends State<HabitCard> {
   double _progressPercentage = 0;
 
   void editHabit() {
-    print("PRESSED");
     this.widget.editHabitCallback(this.widget.habit);
   }
 
@@ -54,8 +53,6 @@ class _HabitCardState extends State<HabitCard> {
   @override
   void initState() {
     super.initState();
-    print(widget.habit.practiceDuration);
-    print(widget.habit.targetDuration);
 
     if (this.mounted)
       setState(() {

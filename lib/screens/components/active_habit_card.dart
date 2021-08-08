@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:habit_maker/constants/colors.dart';
 import 'package:habit_maker/constants/styles.dart';
 import 'package:habit_maker/model/habit.dart';
-import 'package:habit_maker/utils/db.dart';
+import 'package:habit_maker/model/timer.dart';
 import 'package:habit_maker/utils/formatDuration.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -12,7 +12,8 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 class ActiveHabitCard extends StatefulWidget {
   Habit habit;
   var endTimerCallback;
-  ActiveHabitCard(this.habit, this.endTimerCallback);
+  HabitTimer timer;
+  ActiveHabitCard(this.habit, this.timer, this.endTimerCallback);
 
   @override
   _ActiveHabitCardState createState() => _ActiveHabitCardState();
@@ -30,7 +31,8 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
     _progressPercentage = (widget.habit.practiceDuration.inSeconds /
         widget.habit.targetDuration.inSeconds);
     _percentageString = "${(_progressPercentage * 100).round()}%";
-    _timerString = formatDuration(widget.habit.practiceDuration);
+    _timerString = formatDuration(
+        DateTime.now().difference(widget.timer.startTime ?? DateTime.now()));
     _timer = Timer.periodic(Duration(seconds: 1), (_) => updateTimer());
     _practiceDuration = widget.habit.practiceDuration;
   }
@@ -38,7 +40,8 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
   void updateTimer() {
     setState(() {
       final secs = _practiceDuration!.inSeconds + 1;
-      _practiceDuration = Duration(seconds: secs);
+      _practiceDuration =
+          DateTime.now().difference(widget.timer.startTime ?? DateTime.now());
       _progressPercentage = (_practiceDuration!.inSeconds /
           widget.habit.targetDuration.inSeconds);
       _percentageString = "${(_progressPercentage * 100).round()}%";
@@ -55,7 +58,6 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
         frequency: widget.habit.frequency,
         targetDuration: widget.habit.targetDuration,
         practiceDuration: _practiceDuration ?? widget.habit.practiceDuration);
-    print(updatedHabit.id);
     this.widget.endTimerCallback(updatedHabit);
   }
 
