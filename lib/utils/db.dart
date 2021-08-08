@@ -14,15 +14,14 @@ class DB {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('habits.db');
+    _database = await _initDB('main2.db');
     return _database!;
   }
 
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path,
-        version: 2, onCreate: _createDB, onUpgrade: _upgrade1);
+    return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -40,6 +39,8 @@ class DB {
       ${HabitField.practiceDuration} $requiredText,
       ${HabitField.targetDuration} $requiredText
     )
+    ''');
+    await db.execute('''
     CREATE TABLE $tableTimer(
       ${TimerField.id} $idType,
       ${TimerField.habitId} $requiredInt,
@@ -48,13 +49,6 @@ class DB {
       ${TimerField.isActive} $requiredInt
     )
     ''');
-  }
-
-  FutureOr<void> _upgrade1(Database db, int oldVersion, int newVersion) async {
-    await db.execute('''
-    ALTER TABLE $tableTimer ADD COLUMN isActive INTEGER DEFAULT 0  
-    ''');
-    print("db upgraded.");
   }
 
   Future<Habit> createHabit(Habit habit) async {
@@ -93,7 +87,7 @@ class DB {
 
   Future<HabitTimer?> getActiveTimer() async {
     final db = await instance.database;
-    final maps = await db.query(tableHabits,
+    final maps = await db.query(tableTimer,
         columns: TimerField.values,
         where: "${TimerField.isActive} = ?",
         whereArgs: [1]);

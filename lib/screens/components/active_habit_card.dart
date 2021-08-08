@@ -39,7 +39,6 @@ class _ActiveHabitCardState extends State<ActiveHabitCard> {
 
   void updateTimer() {
     setState(() {
-      final secs = _practiceDuration!.inSeconds + 1;
       _practiceDuration =
           DateTime.now().difference(widget.timer.startTime ?? DateTime.now());
       _progressPercentage = (_practiceDuration!.inSeconds /

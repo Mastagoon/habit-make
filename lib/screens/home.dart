@@ -36,13 +36,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
   }
 
-  void refreshHabitList() async {
+  refreshHabitList() async {
     var habits = await DB.instance.getAllHabits();
     setState(() {
       habitList = habits
           .map((h) => HabitCard(h, startTimerCallback, editHabitCallback))
           .toList();
     });
+    print("habit list updated.");
     // get active timer
     final activeTimer = await DB.instance.getActiveTimer();
     if (activeTimer != null) {
@@ -167,11 +168,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return activeHabit;
   }
 
-  startTimerCallback(habit) {
+  startTimerCallback(habit) async {
+    final timer = await DB.instance.createTimer(HabitTimer(
+        habitId: habit.id, startTime: DateTime.now(), isActive: true));
     setState(() {
       // create a new timer
-      final timer = HabitTimer(
-          habitId: habit.id, startTime: DateTime.now(), isActive: true);
       activeHabit = ActiveHabitCard(habit, timer, endTimerCallback);
     });
   }
@@ -184,13 +185,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           timer.copy(endTime: DateTime.now(), isActive: false));
     // update habit
     await DB.instance.updateHabit(habit);
+    activeHabit = null;
     refreshHabitList();
-    setState(() => activeHabit = null);
   }
 
   createHabitCallback() async {
     refreshHabitList();
-    setState(() {});
   }
 
   editHabitCallback(habit) async {
@@ -203,14 +203,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   deleteHabitCallback(id) async {
     await DB.instance.deleteHabit(id);
     refreshHabitList();
-    setState(() {});
     showSnackBar("Habit deleted successfully.", successColor);
   }
 
   updateHabitCallback(habit) async {
     await DB.instance.updateHabit(habit);
     refreshHabitList();
-    setState(() {});
     showSnackBar("Habit updated successfully", successColor);
   }
 }

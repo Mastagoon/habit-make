@@ -49,7 +49,9 @@ class HabitTimer {
       habitId: json[TimerField.habitId] as int,
       startTime: DateTime.fromMillisecondsSinceEpoch(
           int.parse(json[TimerField.startTime] as String)),
-      endTime: DateTime.fromMillisecondsSinceEpoch(
+      endTime: json[TimerField.endTime] == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(
           int.parse(json[TimerField.endTime] as String)),
       isActive: json[TimerField.isActive] == 0 ? false : true);
 
